@@ -17,6 +17,7 @@ let wrongAttempts = 0;
 const TIMELINE = [
   {
     img: "images/image1.jpeg",
+    fit: "contain",
     title: "How it started",
     caption:
       "I've been holding onto this one. This is our first ever message, ever. This is the first day I met you. This first day our souls came into contact. This message here changed our lives. April 14th, 2023. First day I met you and our first text thread.",
@@ -61,7 +62,7 @@ const TIMELINE = [
     video: "images/IMG_4335.mov",
     title: "The little things",
     caption:
-      "This is one of my favorite videos of all time of you. This video embodies why I love you so much. The details in the video, the walk — it talks to me. The smile softens my heart. The dress looks beautiful on you. The way you carry yourself is so beautiful.",
+      "This is one of my favorite videos of all time of you. This video embodies why I love you so much. The details in the video, the walk  it talks to me. The smile softens my heart. The dress looks beautiful on you. The way you carry yourself is so beautiful.",
   },
   {
     img: "images/adventures.jpeg",
@@ -72,13 +73,13 @@ const TIMELINE = [
   {
     img: "images/Nova.jpeg",
     title: "My Daughter",
-    caption: "It's your birthday — but my daughter deserves a shout out!",
+    caption: "It's your birthday  but my daughter deserves a shout out!",
   },
   {
     img: "images/lately.png",
     title: "And forward",
     caption:
-      "Lately I've been feeling like a unit, and this image represents that. I love this image because how I envision the future looks like this. The picture speaks volumes — and it's time to show the world what I see in it.",
+      "Lately I've been feeling like a unit, and this image represents that. I love this image because how I envision the future looks like this. The picture speaks volumes and it's time to show the world what I see in it.",
   },
 ];
 
@@ -124,13 +125,23 @@ function buildMemoryMedia(item, title) {
   if (videoSrc) {
     const poster = imgSrc ? ' poster="' + imgSrc + '"' : "";
     return (
+      '<div class="memory-video-wrap">' +
       '<video class="memory-media memory-video" src="' +
       videoSrc +
       '"' +
       poster +
       ' playsinline muted loop preload="metadata" aria-label="' +
       title +
-      '"></video>'
+      '"></video>' +
+      '<div class="memory-video-overlay" aria-hidden="false">' +
+      '<button type="button" class="memory-video-play" aria-label="Play video">' +
+      '<span class="memory-video-play-icon" aria-hidden="true"></span>' +
+      '<span class="memory-video-play-label">Play video</span>' +
+      "</button>" +
+      '<div class="memory-video-loading" aria-label="Loading video">' +
+      '<span class="memory-video-spinner"></span>' +
+      "</div>" +
+      "</div></div>"
     );
   }
 
@@ -144,16 +155,41 @@ function buildMemoryMedia(item, title) {
   );
 }
 
+function initVideoPlayers() {
+  document.querySelectorAll(".memory-video-wrap").forEach((wrap) => {
+    const video = wrap.querySelector(".memory-video");
+    const playBtn = wrap.querySelector(".memory-video-play");
+    if (!video || !playBtn) return;
+
+    playBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      wrap.classList.add("is-loading");
+      video.muted = false;
+      video.play().catch(() => wrap.classList.remove("is-loading"));
+    });
+
+    video.addEventListener("loadstart", () => wrap.classList.add("is-loading"));
+    video.addEventListener("waiting", () => wrap.classList.add("is-loading"));
+    video.addEventListener("canplay", () => wrap.classList.remove("is-loading"));
+    video.addEventListener("playing", () => {
+      wrap.classList.add("is-playing");
+      wrap.classList.remove("is-loading");
+    });
+    video.addEventListener("pause", () => wrap.classList.remove("is-playing"));
+    video.addEventListener("error", () => wrap.classList.remove("is-loading"));
+  });
+}
+
 function syncMemoryVideos(activePanelIndex) {
   document.querySelectorAll(".journey-panel").forEach((panel, pi) => {
-    const video = panel.querySelector(".memory-video");
-    if (!video) return;
-    if (pi === activePanelIndex) {
-      video.currentTime = 0;
-      video.play().catch(() => {});
-    } else {
-      video.pause();
-    }
+    const wrap = panel.querySelector(".memory-video-wrap");
+    if (!wrap) return;
+    const video = wrap.querySelector(".memory-video");
+    video.pause();
+    video.currentTime = 0;
+    video.muted = true;
+    wrap.classList.remove("is-playing", "is-loading");
+    if (pi === activePanelIndex) video.load();
   });
 }
 
@@ -171,9 +207,11 @@ function buildJourney() {
       "journey-panel journey-memory" +
       (isGallery ? " journey-memory-gallery" : i % 2 === 1 ? " flip" : "");
     panel.dataset.label = item.title;
+    const fitClass = item.fit === "contain" ? " memory-fit-contain" : "";
+    const hasVideo = !!(item.video || isVideoFile(item.img));
     panel.innerHTML = `
       <div class="memory-layout">
-        <div class="memory-photo-wrap">
+        <div class="memory-photo-wrap${fitClass}${hasVideo ? " memory-has-video" : ""}">
           ${buildMemoryMedia(item, item.title)}
         </div>
         <div class="memory-story">
@@ -200,6 +238,8 @@ function buildJourney() {
     node.addEventListener("click", () => goToPanel(i));
     rail.appendChild(node);
   });
+
+  initVideoPlayers();
 
   const prev = document.querySelector(".journey-prev");
   const next = document.querySelector(".journey-next");
@@ -329,11 +369,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const bg = document.querySelector(".unlock-photo");
   if (bg) {
-    const img = new Image();
-    img.onload = () => bg.classList.add("loaded");
-    img.onerror = () => bg.classList.add("loaded");
-    img.src = "images/morecode.jpeg";
-    if (img.complete) bg.classList.add("loaded");
+    const reveal = () => bg.classList.add("loaded");
+    if (bg.complete) reveal();
+    else {
+      bg.onload = reveal;
+      bg.onerror = reveal;
+    }
   }
 
   const inputEl = document.getElementById("password-input");

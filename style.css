@@ -54,16 +54,20 @@ body {
   background: linear-gradient(160deg, #e8dfd2 0%, #d9cfc0 100%);
 }
 
-/* the background photo as its own layer so it can fade in once loaded */
+/* the background photo — real <img> renders more reliably on iOS than CSS backgrounds */
 .unlock-photo {
   position: absolute;
   inset: 0;
   z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 42%;
   opacity: 0;
   transition: opacity 0.9s ease;
-  background:
-    linear-gradient(160deg, rgba(242, 235, 224, 0.1) 0%, rgba(78, 122, 68, 0.08) 100%),
-    url("images/morecode.jpeg") center / cover no-repeat;
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 .unlock-photo.loaded {
   opacity: 1;
@@ -580,23 +584,150 @@ body {
   overflow: hidden;
   box-shadow: 0 20px 50px var(--shadow);
 }
-.memory-photo-wrap::after {
+.memory-photo-wrap:not(.memory-has-video)::after {
   content: "";
   position: absolute;
   inset: 0;
   background: linear-gradient(135deg, transparent 60%, rgba(78, 122, 68, 0.1));
   pointer-events: none;
+  z-index: 1;
 }
 .memory-photo,
 .memory-video {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   display: block;
   background: linear-gradient(160deg, #ebe3d6, #ded0bc);
 }
+/* tall screenshots (e.g. iMessage) — show full image, don't crop to keyboard */
+.memory-fit-contain {
+  background: #141414;
+}
+.memory-fit-contain .memory-photo,
+.memory-fit-contain .memory-video {
+  object-fit: contain;
+  object-position: top center;
+}
 .memory-video {
   background: #2c241c;
+}
+
+/* video play overlay */
+.memory-video-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.memory-video-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 2;
+  transition: opacity 0.35s ease;
+}
+.memory-video-play {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.35s ease;
+}
+.memory-video-play-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-deep) 100%);
+  box-shadow: 0 8px 28px var(--shadow-accent);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.memory-video-play-icon::before {
+  content: "";
+  margin-left: 4px;
+  border-style: solid;
+  border-width: 11px 0 11px 18px;
+  border-color: transparent transparent transparent #fff;
+}
+.memory-video-play-label {
+  font-family: "Poppins", sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.55);
+}
+.memory-video-play:hover .memory-video-play-icon {
+  transform: scale(1.06);
+  box-shadow: 0 12px 32px rgba(111, 69, 40, 0.45);
+}
+.memory-video-loading {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20, 20, 20, 0.45);
+  pointer-events: none;
+}
+.memory-video-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.25);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: videoSpin 0.75s linear infinite;
+}
+@keyframes videoSpin {
+  to { transform: rotate(360deg); }
+}
+.memory-video-wrap.is-playing .memory-video-overlay {
+  opacity: 0;
+  pointer-events: none;
+}
+.memory-video-wrap.is-playing .memory-video-play {
+  pointer-events: none;
+}
+.memory-video-wrap.is-loading .memory-video-loading {
+  display: flex;
+}
+.memory-video-wrap.is-loading .memory-video-play {
+  opacity: 0;
+  pointer-events: none;
+}
+.memory-has-video::after {
+  content: "▶ Video";
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 3;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-family: "Poppins", sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  background: rgba(44, 36, 28, 0.72);
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+.memory-has-video:has(.memory-video-wrap.is-playing)::after {
+  opacity: 0;
 }
 
 /* 2×2 photo gallery slide */
@@ -726,6 +857,20 @@ body {
 }
 
 @media (max-width: 720px) {
+  #unlock-screen {
+    padding: 16px;
+    min-height: 100dvh;
+  }
+  .unlock-photo {
+    object-position: center 38%;
+  }
+  .lock-card {
+    padding: 32px 20px;
+    max-height: 78dvh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
   .journey-header { padding: 12px 12px 6px; }
   .journey-hint { display: none; }
   .journey-node-label { font-size: 0; }
@@ -736,21 +881,39 @@ body {
 
   .memory-layout {
     grid-template-columns: 1fr;
-    grid-template-rows: 1fr auto;
+    grid-template-rows: auto auto;
     max-height: none;
     gap: 16px;
+    align-items: start;
   }
   .journey-memory.flip .memory-layout { direction: ltr; }
   .memory-photo-wrap {
+    width: 100%;
+    max-width: min(100%, 320px);
+    margin: 0 auto;
+    height: auto;
     min-height: 0;
-    max-height: 42vh;
+    max-height: min(56dvh, 520px);
+    aspect-ratio: 9 / 19;
+  }
+  .memory-photo,
+  .memory-video {
+    object-fit: contain;
+    object-position: top center;
+    height: 100%;
+    max-height: min(56dvh, 520px);
+  }
+  .memory-photo-wrap:not(.memory-fit-contain) {
+    background: linear-gradient(160deg, #ebe3d6, #ded0bc);
   }
   .memory-gallery {
-    max-height: 42vh;
+    max-height: min(50dvh, 480px);
+    aspect-ratio: 1;
     gap: 6px;
   }
   .memory-gallery-photo {
     border-radius: 8px;
+    object-fit: cover;
   }
   .memory-story { padding: 0 4px 8px; text-align: center; }
   .memory-story > * { transform: translateY(12px); }
