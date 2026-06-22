@@ -56,7 +56,7 @@ const TIMELINE = [
     img: "images/justus.jpeg",
     title: "Just us",
     caption:
-      "I love this photo of us because it shows so much life. There are a lot of moments we share where the world stops spinning. I can tell in this picture we were in the moment. Also — we look young.",
+      "I love this photo of us because it shows so much life. There are a lot of moments we share where the world stops spinning. I can tell in this picture we were in the moment. Also we look young.",
   },
   {
     video: "images/IMG_4335.mov",
@@ -163,20 +163,25 @@ function initVideoPlayers() {
 
     playBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      wrap.classList.add("is-loading");
+      wrap.classList.add("wants-play", "is-loading");
       video.muted = false;
-      video.play().catch(() => wrap.classList.remove("is-loading"));
+      video.play().catch(() => {
+        wrap.classList.remove("is-loading", "wants-play");
+      });
     });
 
-    video.addEventListener("loadstart", () => wrap.classList.add("is-loading"));
-    video.addEventListener("waiting", () => wrap.classList.add("is-loading"));
+    video.addEventListener("waiting", () => {
+      if (wrap.classList.contains("wants-play")) wrap.classList.add("is-loading");
+    });
     video.addEventListener("canplay", () => wrap.classList.remove("is-loading"));
     video.addEventListener("playing", () => {
       wrap.classList.add("is-playing");
       wrap.classList.remove("is-loading");
     });
     video.addEventListener("pause", () => wrap.classList.remove("is-playing"));
-    video.addEventListener("error", () => wrap.classList.remove("is-loading"));
+    video.addEventListener("error", () => {
+      wrap.classList.remove("is-loading", "wants-play", "is-playing");
+    });
   });
 }
 
@@ -188,8 +193,7 @@ function syncMemoryVideos(activePanelIndex) {
     video.pause();
     video.currentTime = 0;
     video.muted = true;
-    wrap.classList.remove("is-playing", "is-loading");
-    if (pi === activePanelIndex) video.load();
+    wrap.classList.remove("is-playing", "is-loading", "wants-play");
   });
 }
 
