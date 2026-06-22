@@ -914,9 +914,15 @@ body {
   .memory-layout {
     grid-template-columns: 1fr;
     grid-template-rows: auto auto;
+    height: auto;
     max-height: none;
     gap: 16px;
     align-items: start;
+  }
+  .journey-memory.journey-panel {
+    align-items: flex-start;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .journey-memory.flip .memory-layout { direction: ltr; }
   .memory-photo-wrap {
@@ -925,15 +931,29 @@ body {
     margin: 0 auto;
     height: auto;
     min-height: 0;
-    max-height: min(56dvh, 520px);
-    aspect-ratio: 9 / 19;
+    max-height: min(40dvh, 300px);
+    aspect-ratio: 4 / 3;
+  }
+  /* tall screenshots (iMessage, etc.) need a portrait frame */
+  .memory-photo-wrap.memory-fit-contain {
+    max-height: min(52dvh, 480px);
+    aspect-ratio: 9 / 16;
+  }
+  .memory-photo-wrap.memory-has-video {
+    max-height: min(48dvh, 420px);
+    aspect-ratio: 9 / 16;
   }
   .memory-photo,
   .memory-video {
+    object-fit: cover;
+    object-position: center;
+    height: 100%;
+    max-height: inherit;
+  }
+  .memory-fit-contain .memory-photo,
+  .memory-fit-contain .memory-video {
     object-fit: contain;
     object-position: top center;
-    height: 100%;
-    max-height: min(56dvh, 520px);
   }
   .memory-photo-wrap:not(.memory-fit-contain) {
     background: linear-gradient(160deg, #ebe3d6, #ded0bc);
@@ -947,8 +967,35 @@ body {
     border-radius: 8px;
     object-fit: cover;
   }
-  .memory-story { padding: 0 4px 8px; text-align: center; }
+  .memory-story {
+    position: relative;
+    z-index: 2;
+    padding: 0 4px 8px;
+    text-align: center;
+  }
   .memory-story > * { transform: translateY(12px); }
+  .journey-panel.active .memory-story > * { transform: none; }
+
+  /* text-heavy panels (welcome, letter, finale): allow scrolling so long
+     copy is never clipped on short phone screens */
+  .journey-welcome.journey-panel,
+  .journey-letter.journey-panel,
+  .journey-finale.journey-panel {
+    align-items: flex-start;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-top: 20px;
+    padding-bottom: 24px;
+  }
+  .journey-welcome .panel-inner,
+  .journey-letter .panel-inner,
+  .journey-finale .panel-inner {
+    margin: auto 0;
+  }
+  .journey-letter p {
+    font-size: clamp(15px, 4vw, 18px);
+    line-height: 1.6;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
