@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Birthday</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,500&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="preload" as="image" href="images/morecode.jpeg" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- LANDING / UNLOCK SCREEN -->
+  <section id="unlock-screen">
+    <div class="unlock-photo" aria-hidden="true"></div>
+    <div class="lock-card">
+      <p class="lock-eyebrow">The web is huge so I thought I'd make a place to celebrate you on your birthday.</p>
+
+      <h1 class="lock-title">
+        <span class="name">C3</span>
+        <span class="plus">+</span>
+        <input
+          id="password-input"
+          type="text"
+          autocomplete="off"
+          placeholder="you"
+          aria-label="Type the magic word"
+        />
+      </h1>
+
+      <p class="lock-sub">I know you know how to complete this! Enter the text above and see what I did. You better know it instantly.</p>
+
+      <button id="unlock-btn" onclick="unlockSite()">
+        Unlock <span class="btn-heart">❤</span>
+      </button>
+
+      <p id="error-message"></p>
+    </div>
+  </section>
+
+  <!-- PHOTO REVEAL OVERLAY -->
+  <!-- Drop your photo at images/reveal.jpg (it will be split down the middle).
+       Until then, a placeholder is shown automatically. -->
+  <div id="heart-transition" aria-hidden="true">
+    <div class="panel left">
+      <img class="photo" src="images/reveal.jpeg" alt=""
+           onerror="this.onerror=null;this.src='images/reveal.svg'" />
+      <span class="seam"></span>
+    </div>
+    <div class="panel right">
+      <img class="photo" src="images/reveal.jpeg" alt=""
+           onerror="this.onerror=null;this.src='images/reveal.svg'" />
+      <span class="seam"></span>
+    </div>
+  </div>
+
+  <!-- BIRTHDAY SITE — horizontal journey through time -->
+  <main id="birthday-site" class="hidden">
+    <header class="journey-header">
+      <div class="journey-rail" aria-label="Timeline navigation"></div>
+      <p class="journey-hint">use arrows, swipe, or tap a dot to move through time →</p>
+    </header>
+
+    <div class="journey-viewport">
+      <div class="journey-track">
+        <!-- panel 0: welcome (built-in) -->
+        <section class="journey-panel journey-welcome" data-label="Start">
+          <div class="panel-inner">
+            <p class="panel-eyebrow">Celebrating my Queen. My best friend. My soulmate. My everything.</p>
+            <h1>Happy Birthday <span class="hero-heart">❤</span></h1>
+            <p class="panel-lead">I want to wish you a happy birthday — and by doing so, share images and videos of moments you might not have seen or might not remember. These moments in our timeline are the ones where I fell in love with you more and more.</p>
+          </div>
+        </section>
+        <!-- memory panels built by script.js -->
+        <!-- final panel: letter (built-in) -->
+        <section class="journey-panel journey-letter" data-label="For you">
+          <div class="panel-inner">
+            <h2>Happy Birthday Baby</h2>
+            <p>
+              Baby, happy birthday. I hope this website/journal brings you peace, softness, joy, and everything your heart is needing. I love you more than you know — not just because you are my girlfriend. I love the presence you bring into my life. You make my tough and ordinary days softer, funnier, warmer, and more meaningful.
+            </p>
+            <p>
+              I admire you — and not only for how you love me, but for who you are when you are being yourself. No matter what season life has us in, I'm grateful that I got to know you, love you, and experience the kind of person you are.
+            </p>
+            <p>
+              I would call this a rare kind of love. It's not perfect, not always easy, but meaningful. I look at you and always think, "My life is better because I got to know you — and how can someone so small make such an impact?"
+            </p>
+            <p class="letter-signoff">— yours, always. C3</p>
+          </div>
+        </section>
+        <!-- hidden last beat — one more slide after the letter -->
+        <section class="journey-panel journey-finale" data-label="Always">
+          <div class="panel-inner">
+            <p class="finale-eyebrow">one last thing</p>
+            <p class="finale-line">Thank you for being my person.</p>
+            <p class="finale-line finale-emphasis">Happy birthday. I love you.</p>
+            <button type="button" class="finale-replay" id="replay-journey">Replay our story ↺</button>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <footer class="journey-footer">
+      <button class="journey-arrow journey-prev" aria-label="Previous moment">&#8592;</button>
+      <span class="journey-counter"></span>
+      <button class="journey-arrow journey-next" aria-label="Next moment">&#8594;</button>
+    </footer>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

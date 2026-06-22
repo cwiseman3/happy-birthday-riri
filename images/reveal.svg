@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ebe3d6"/>
+      <stop offset="1" stop-color="#c9b896"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg)"/>
+  <g fill="#ffffff" opacity="0.9">
+    <path transform="translate(540 250) scale(4)"
+      d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4
+         c0,9.4,9.5,11.9,16,21.2c6.1-8.9,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z"/>
+  </g>
+  <text x="600" y="520" text-anchor="middle"
+        font-family="Cormorant Garamond, Georgia, serif" font-size="56"
+        font-style="italic" fill="#ffffff" opacity="0.95">Add your photo</text>
+</svg>
