@@ -51,7 +51,26 @@ body {
   text-align: center;
   overflow: hidden;
   /* warm sand base before the photo fades in */
-  background: linear-gradient(160deg, #e8dfd2 0%, #d9cfc0 100%);
+  background: #ddd8d4;
+}
+
+.unlock-photo-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: #ddd8d4;
+}
+.unlock-photo-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(232, 223, 210, 0.2) 0%,
+    rgba(44, 36, 28, 0.08) 100%
+  );
+  pointer-events: none;
 }
 
 /* the background photo — real <img> renders more reliably on iOS than CSS backgrounds */
@@ -62,7 +81,7 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 42%;
+  object-position: center 45%;
   opacity: 0;
   transition: opacity 0.9s ease;
   pointer-events: none;
@@ -73,18 +92,19 @@ body {
   opacity: 1;
 }
 
-/* soft floating hearts in the background */
+/* soft floating hearts in the background — desktop only */
 #unlock-screen::before,
 #unlock-screen::after {
   content: "❤";
   position: absolute;
-  color: rgba(184, 120, 74, 0.14);
-  font-size: 220px;
+  z-index: 1;
+  color: rgba(184, 120, 74, 0.1);
+  font-size: 160px;
   pointer-events: none;
   animation: drift 9s ease-in-out infinite;
 }
-#unlock-screen::before { top: -40px; left: -30px; }
-#unlock-screen::after  { bottom: -60px; right: -20px; animation-delay: 2s; }
+#unlock-screen::before { top: -30px; left: -20px; }
+#unlock-screen::after  { bottom: -40px; right: -30px; animation-delay: 2s; }
 
 @keyframes drift {
   0%, 100% { transform: translateY(0) rotate(-6deg); }
@@ -860,9 +880,21 @@ body {
   #unlock-screen {
     padding: 16px;
     min-height: 100dvh;
+    background: #ddd8d4;
+  }
+  /* hide emoji hearts on phone — they render huge and overpower the photo */
+  #unlock-screen::before,
+  #unlock-screen::after {
+    display: none;
+  }
+  .unlock-photo-wrap {
+    background: #ddd8d4;
   }
   .unlock-photo {
-    object-position: center 38%;
+    object-fit: contain;
+    object-position: center center;
+    transform: scale(1.04);
+    transform-origin: center center;
   }
   .lock-card {
     padding: 32px 20px;
