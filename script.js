@@ -77,6 +77,7 @@ const TIMELINE = [
   },
   {
     img: "images/lately.png",
+    fit: "contain",
     title: "And forward",
     caption:
       "Lately I've been feeling like a unit, and this image represents that. I love this image because how I envision the future looks like this. The picture speaks volumes and it's time to show the world what I see in it.",
